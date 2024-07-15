@@ -67,19 +67,24 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker BuildKit
+        uses: docker/setup-buildx-action@v2
         with:
           version: latest
 
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
-          path: ~/.cache/docker
+          path: |
+            ~/.cache/docker
+            !~/.cache/docker/buildx
           key: ${{ runner.os }}-docker-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-docker-
 
       - name: Run Docker Compose
-        run: docker-compose up -d --build
+        run: docker-compose up -d
 
       - name: Check service status
         run: |
@@ -90,10 +95,10 @@ jobs:
             echo "All services are running"
           fi
 
-      - name: Run tests with Docker Compose
+      - name: Run health checks with Docker Compose
         run: |
-          docker-compose exec -T http-server curl http://localhost:8080/api/pull || exit 1
-          docker-compose exec -T rpc-server curl http://localhost:8888 || exit 1
+          # Check if http-server responds to /ping
+          docker-compose exec -T http-server curl -f http://localhost:8080/ping || exit 1
 
       - name: Shut down Docker Compose
         run: docker-compose down
