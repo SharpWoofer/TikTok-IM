@@ -1,7 +1,4 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Tests
+name: CI Workflow
 
 on:
   push:
@@ -10,55 +7,81 @@ on:
     branches: [ "main" ]
 
 jobs:
-
+  # Job for the http-server service
   http-server:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./http-server
     steps:
-      - uses: actions/checkout@v3
-
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
-      - name: Build
+      - name: Build http-server
         run: go build -v ./...
 
-      - name: Test
-        run: go test -race -cover -coverprofile=coverage.out $(go list ./... | grep -Ev "_gen") -coverpkg $(go list ./... | grep -Ev "_gen" | tr "\n" "," | sed 's/.$//')
+      - name: Run tests for http-server
+        run: go test -race -cover -coverprofile=coverage.out $(go list ./... | grep -Ev "_gen") -coverpkg $(go list ./... | grep -Ev "_gen" | tr "\n" "," | sed 's/,$//')
 
-      - name: Show coverage
+      - name: Show http-server coverage
         run: go tool cover -func=coverage.out | awk 'END {print $NF}'
 
+  # Job for the rpc-server service
   rpc-server:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./rpc-server
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
-      - name: Build
+      - name: Build rpc-server
         run: go build -v ./...
 
-      - name: Test
-        run: go test -race -cover -coverprofile=coverage.out $(go list ./... | grep -Ev "_gen") -coverpkg $(go list ./... | grep -Ev "_gen" | tr "\n" "," | sed 's/.$//')
+      - name: Run tests for rpc-server
+        run: go test -race -cover -coverprofile=coverage.out $(go list ./... | grep -Ev "_gen") -coverpkg $(go list ./... | grep -Ev "_gen" | tr "\n" "," | sed 's/,$//')
 
-      - name: Show coverage
+      - name: Show rpc-server coverage
         run: go tool cover -func=coverage.out | awk 'END {print $NF}'
 
+  # Job for running Docker Compose
   docker-compose:
     runs-on: ubuntu-latest
+    needs:
+      - http-server
+      - rpc-server
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker BuildKit
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: latest
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/docker
+            !~/.cache/docker/buildx
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
       - name: Run Docker Compose
         run: docker-compose up -d
@@ -71,3 +94,11 @@ jobs:
           else
             echo "All services are running"
           fi
+
+      - name: Run tests with Docker Compose
+        run: |
+          docker-compose exec http-server curl http://localhost:8080/api/pull || exit 1
+          docker-compose exec rpc-server curl http://localhost:8888 || exit 1
+
+      - name: Shut down Docker Compose
+        run: docker-compose down
