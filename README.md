@@ -9,6 +9,8 @@ Welcome to the **Instant Messaging System** backend, developed for the [TikTok T
 ![Docker](https://img.shields.io/badge/docker-ready-blueviolet)
 ![Documentation](https://img.shields.io/badge/docs-updated-yellow)
 
+![244300799-7668d883-03dc-4cd3-b097-17704da9dd4a](https://github.com/user-attachments/assets/fdd96dc5-22ca-4ae2-b5f3-bdd2fface928)
+
 ## 📂 Project Overview
 
 This backend system is designed to handle core messaging functionalities including sending and retrieving messages. It consists of two main services and utilizes Redis for data storage.
