@@ -1,5 +1,7 @@
 # 📱 Instant Messaging System (Backend)
 
+![244300799-7668d883-03dc-4cd3-b097-17704da9dd4a](https://github.com/user-attachments/assets/fdd96dc5-22ca-4ae2-b5f3-bdd2fface928)
+
 Welcome to the **Instant Messaging System** backend, developed for the [TikTok Tech Immersion Server (Backend) Assignment](https://bytedance.sg.feishu.cn/docx/P9kQdDkh5oqG37xVm5slN1Mrgle). This project provides essential features for an instant messaging system, focusing on message handling through microservices architecture.
 
 ![Build Status](https://github.com/SharpWoofer/TikTok-IM/actions/workflows/test.yml/badge.svg)
@@ -9,7 +11,17 @@ Welcome to the **Instant Messaging System** backend, developed for the [TikTok T
 ![Docker](https://img.shields.io/badge/docker-ready-blueviolet)
 ![Documentation](https://img.shields.io/badge/docs-updated-yellow)
 
-![244300799-7668d883-03dc-4cd3-b097-17704da9dd4a](https://github.com/user-attachments/assets/fdd96dc5-22ca-4ae2-b5f3-bdd2fface928)
+<details>
+<summary>📄 Click to view certificate</summary>
+
+<p>
+  <a href="https://bytedance.sg.larkoffice.com/file/CHV8b6hRno1sTSxvZkOliy5Qgbc" target="_blank">
+    <img src="https://github.com/user-attachments/assets/7e1deea6-1bca-4f9b-bf48-e065e3196bf4" alt="Certificate (Cai Hongqi)_page-0001" />
+  </a>
+</p>
+
+</details>
+
 
 ## 📂 Project Overview
 
